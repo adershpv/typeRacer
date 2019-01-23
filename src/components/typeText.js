@@ -4,52 +4,78 @@ import isEqual from 'lodash/isEqual';
 
 class TypeText extends Component {
     state = {
-        randomText: '',
-        completed: '',
-        error: '',
-        remaining: ''
+        fullString: '',
+        remainingString: '',
+        completedWords: []
     };
 
     componentDidMount() {
         fetch('http://www.randomtext.me/api/')
             .then(response => response.json())
             .then(data => {
-                this.setState({ randomText: data.text_out });
+                let fullString = striptags(data.text_out).trim();
+                this.setState({
+                    fullString,
+                    remainingString: fullString
+                });
             });
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const { typedWords = [], setCorrectWords } = this.props;
-        const { randomText } = this.state;
+        const { input, setCorrectWordsCount, resetTextBox } = this.props;
+        const { fullString, completedWords, remainingString } = this.state;
 
         if (
-            !isEqual(typedWords, prevProps.typedWords) ||
-            !isEqual(randomText, prevState.randomText)
+            !isEqual(input, prevProps.input) ||
+            !isEqual(fullString, prevState.fullString)
         ) {
-            let fullString = striptags(randomText).trim();
-            const correcWords = [];
-            typedWords.forEach(word => {
-                if (fullString.startsWith(word)) {
-                    fullString = fullString.replace(word, '').trim();
-                    correcWords.push(word);
-                }
-            });
-            setCorrectWords(correcWords);
-            this.setState({
-                completed: correcWords.join(' '),
-                remaining: fullString
-            });
+            let remainingWords = remainingString.split(' ');
+            if (input.trim() === remainingWords[0]) {
+                const completed = [...completedWords, input];
+                this.setState(
+                    {
+                        completedWords: completed,
+                        remainingString: remainingWords.slice(1).join(' ')
+                    },
+                    () => {
+                        resetTextBox();
+                        setCorrectWordsCount(completed.length);
+                    }
+                );
+            }
         }
     }
 
-    render() {
-        const { completed, error, nextWord, remaining } = this.state;
+    getFormattedRemainingString = (remainingString, input) => {
+        let correctString = '';
+        let errorString = '';
+        let typedChars = input.split('');
+        typedChars.forEach(char => {
+            if (remainingString.startsWith(char)) {
+                correctString = correctString + char;
+                remainingString = remainingString.replace(char, '');
+            } else {
+                errorString = errorString + remainingString.charAt(0);
+                remainingString = remainingString.substring(1);
+            }
+        });
+
         return (
             <React.Fragment>
-                <span className="highlighted">{completed}</span>{' '}
-                <span className="error">{error}</span>{' '}
-                <span className="nextWord">{nextWord}</span>{' '}
-                <span>{remaining}</span>
+                <span className="correctString">{correctString}</span>
+                <span className="errorString">{errorString}</span>{' '}
+                {remainingString}
+            </React.Fragment>
+        );
+    };
+
+    render() {
+        const { completedWords, remainingString } = this.state;
+        const { input } = this.props;
+        return (
+            <React.Fragment>
+                <span className="completed">{completedWords.join(' ')}</span>{' '}
+                {this.getFormattedRemainingString(remainingString, input)}
             </React.Fragment>
         );
     }

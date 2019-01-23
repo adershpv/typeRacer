@@ -1,12 +1,13 @@
-.highlighted {
+.completed {
     color: yellowgreen;
     background-color: unset;
 }
 
-.nextWord {
+.correctString {
+    color: yellowgreen;
     text-decoration: underline;
 }
 
-.error {
+.errorString {
     color: red;
 }

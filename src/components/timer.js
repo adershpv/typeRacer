@@ -20,9 +20,9 @@ class Timer extends Component {
     };
 
     getCorrectWordsPerMinute = words => {
-        if (!words || words.length === 0) return 0;
+        if (!words || words === 0) return 0;
 
-        return Math.floor((words.length * 60) / this.state.currentCount);
+        return Math.floor((words * 60) / this.state.currentCount);
     };
 
     render() {
@@ -33,7 +33,7 @@ class Timer extends Component {
                 </div>
                 <div className="col-md-3 text-right">
                     <p>{`${this.getCorrectWordsPerMinute(
-                        this.props.correctWords
+                        this.props.correctWordsCount
                     )} words per minute`}</p>
                 </div>
             </div>

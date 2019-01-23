@@ -6,8 +6,7 @@ import TypeText from './typeText';
 class TypeRacer extends Component {
     state = {
         input: '',
-        typedWords: [],
-        correctWords: []
+        correctWordsCount: 0
     };
 
     handleChange = e => {
@@ -16,39 +15,29 @@ class TypeRacer extends Component {
         });
     };
 
-    addNewWord = e => {
-        if (e.keyCode === 32) {
-            const { typedWords, input } = this.state;
-            this.setState({
-                typedWords: [...typedWords, input]
-            });
-        }
-    };
-
     resetTextBox = e => {
-        if (e.keyCode === 32) {
-            this.setState({
-                input: ''
-            });
-        }
+        this.setState({
+            input: ''
+        });
     };
 
-    setCorrectWords = correctWords => {
+    setCorrectWordsCount = count => {
         this.setState({
-            correctWords
+            correctWordsCount: count
         });
     };
 
     render() {
-        const { input, typedWords, correctWords } = this.state;
+        const { input, correctWordsCount } = this.state;
         return (
             <div className="container">
-                <Timer correctWords={correctWords} />
+                <Timer correctWordsCount={correctWordsCount} />
                 <div className="row">
                     <div className="col-md-6">
                         <TypeText
-                            typedWords={typedWords}
-                            setCorrectWords={this.setCorrectWords}
+                            input={input}
+                            setCorrectWordsCount={this.setCorrectWordsCount}
+                            resetTextBox={this.resetTextBox}
                         />
                         <div className="form-group mt-2">
                             <input
@@ -57,8 +46,6 @@ class TypeRacer extends Component {
                                 placeholder="Enter the text above"
                                 value={input}
                                 onChange={this.handleChange}
-                                onKeyDown={this.addNewWord}
-                                onKeyUp={this.resetTextBox}
                             />
                         </div>
                     </div>
