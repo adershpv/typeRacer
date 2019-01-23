@@ -30,7 +30,7 @@ class TypeText extends Component {
             !isEqual(fullString, prevState.fullString)
         ) {
             let remainingWords = remainingString.split(' ');
-            if (input.trim() === remainingWords[0]) {
+            if (input[input.length -1] === " " && input.trim() === remainingWords[0]) {
                 const completed = [...completedWords, input];
                 this.setState(
                     {
